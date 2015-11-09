@@ -2,23 +2,56 @@ import sys
 import os
 
 import numpy as np
+import statistics
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.cross_validation import cross_val_score
+
+PLACEHOLDER = -5.0
+N_COLS = 300
 
 def main(argv):
   f = open("trainingData.txt")
-  rows = [];
+
+  cols = []
+  for col_i in range(N_COLS):
+    col = []
+    cols.append(col)
+
+  rows = []
+  n_na = 0
+
   while True:
     row = f.readline()
     if row == "": break
-    features = [float(number) if number != 'NA' else -5.0 for number in row.split()]
+    features = [float(number) if number != 'NA' else PLACEHOLDER for number in row.split()]
+
+    for col_i in range(N_COLS):
+      if features[col_i] != PLACEHOLDER:
+        cols[col_i].append(features[col_i])
+      else:
+        n_na += 1
+
     rows.append(features)
   f.close()
+
+  print (n_na)
+
+  medians = []
+  for col_i in range(N_COLS):
+    medians.append(statistics.median(cols[col_i]))
+
+  for i, features in enumerate(rows):
+    for j, feature in enumerate(features):
+      if feature == PLACEHOLDER:
+        rows[i][j] = medians[j]
 
   X = np.array(rows)
 
   print (X.shape)
 
   f = open("trainingTruth.txt")
-  rows = [];
+  rows = []
   while True:
     row = f.readline()
     if row == "": break
@@ -28,6 +61,12 @@ def main(argv):
   Y = np.array(rows)
 
   print (Y.shape)
+
+  clf = RandomForestClassifier(n_estimators=20)
+
+  scores = cross_val_score(clf, X, Y, cv=10)
+
+  print (scores)
 
 if __name__ == "__main__":
   main(sys.argv[1:])
