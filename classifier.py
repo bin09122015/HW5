@@ -63,10 +63,28 @@ def main(argv):
   print (Y.shape)
 
   clf = RandomForestClassifier(n_estimators=20)
+  clf.fit(X, Y)
 
-  scores = cross_val_score(clf, X, Y, cv=10)
+  f = open("testData.txt")
+  rows = []
+  while True:
+    row = f.readline()
+    if row == "": break
+    features = [float(number) for number in row.split()]
+    rows.append(features)
+  f.close()
 
-  print (scores)
+  f = open("testPrediction.txt", "w")
+
+  for features in rows:
+    proba = clf.predict_proba(features)
+    predict = clf.predict(features)
+    f.write(str(proba[0][0])+"\t"+
+            str(proba[0][1])+"\t"+
+            str(proba[0][2])+"\t"+
+            str(int(predict[0]))+"\n")
+
+  f.close()
 
 if __name__ == "__main__":
   main(sys.argv[1:])
