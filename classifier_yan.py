@@ -15,10 +15,11 @@ def main(argv):
     trainX.drop(trainX.columns[len(trainX.columns)-1], axis = 1, inplace = True)
     trainY = pd.read_csv("trainingTruth.txt", header = None, names = ['Y'])
     df = trainX.join(trainY)
-    # df.fillna(df.median(), inplace = True)
-    # Is it better to delete the rows with NA in the training? Fill in median could mislead the classifier.
-    # How about dropping all the rows with NA using the following line?
-    df.dropna(axis=0, inplace=True) # drop the row with NA in training.
+    index = df.isnull().sum(axis=1) <= 1
+    df = df[index]
+    df.fillna(df.median(), inplace = True)
+    print(len(df))
+    #df.dropna(axis=0, inplace=True) # drop the row with NA in training.
     X = df.iloc[:,0:-1].values
     Y = df['Y'].values
 
