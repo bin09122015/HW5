@@ -20,21 +20,31 @@ def main(argv):
 
   rows = []
   n_na = 0
+  curr_n_na = 0
+  freq_dict = {}
 
   while True:
     row = f.readline()
     if row == "": break
     features = [float(number) if number != 'NA' else PLACEHOLDER for number in row.split()]
 
+    curr_n_na = 0
     for col_i in range(N_COLS):
       if features[col_i] != PLACEHOLDER:
         cols[col_i].append(features[col_i])
       else:
         n_na += 1
+        curr_n_na += 1
 
     rows.append(features)
+
+    if curr_n_na in freq_dict:
+      freq_dict[curr_n_na] += 1
+    else:
+      freq_dict[curr_n_na] = 1
   f.close()
 
+  print (freq_dict)
   print (n_na)
 
   medians = []
