@@ -27,7 +27,7 @@ def main(argv):
 
     testX = pd.read_csv('testData.txt','\t', header = None)
     testX.drop(testX.columns[len(testX.columns)-1], axis = 1, inplace = True)
-    testX.dropna(axis=0, inplace=True) # drop the row with NA in testing.
+    testX.fillna(testX.median(), inplace = True) # Handle NA in test data, although not necessary for this assignment.
 
     proba = clf.predict_proba(testX)
     prediction = clf.predict(testX)
