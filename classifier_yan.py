@@ -12,7 +12,7 @@ from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import VotingClassifier, AdaBoostClassifier
 # Need to upgrade scikit-learn: 0.16.1-np110py34_0 --> 0.17-np110py34_1
 from sklearn.cross_validation import cross_val_score
 
@@ -43,9 +43,10 @@ def main(argv):
     clf4 = DecisionTreeClassifier(max_depth=4)
     clf5 = KNeighborsClassifier(n_neighbors=7)
     clf6 = SVC(kernel='rbf', probability=True)
+    clf7 = AdaBoostClassifier(random_state=1)
 
     eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
-                                     ('dt', clf4), ('kn', clf5), ('svc', clf6)], 
+                                     ('dt', clf4), ('kn', clf5), ('svc', clf6), ('ada', clf7)], 
                          voting='soft').fit(X_PCA,Y)
 
     testX = pd.read_csv('testData.txt','\t', header = None)
