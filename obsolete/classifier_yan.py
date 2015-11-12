@@ -32,7 +32,12 @@ def main(argv):
     #df.dropna(axis=0, inplace=True) # drop the row with NA in training.
     X = df.iloc[:,0:-1].values
     Y = df['Y'].values
-    
+
+    Y_binary = np.ones((len(Y),3)) * (-1)
+    for i in range(3):
+        index = Y == (i+1)
+        Y_binary[index,i] = 1
+
     X_scaled = preprocessing.scale(X)
     X_PCA = PCA(n_components=30).fit_transform(X_scaled)
 
@@ -45,10 +50,6 @@ def main(argv):
     clf6 = SVC(kernel='rbf', probability=True)
     clf7 = AdaBoostClassifier(random_state=1)
 
-    eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
-                                     ('dt', clf4), ('kn', clf5), ('svc', clf6), ('ada', clf7)], 
-                         voting='soft').fit(X_PCA,Y)
-
     testX = pd.read_csv('testData.txt','\t', header = None)
     testX.drop(testX.columns[len(testX.columns)-1], axis = 1, inplace = True)
     testX.fillna(testX.median(), inplace = True) # Handle NA in test data, although not necessary for this assignment.
@@ -56,12 +57,18 @@ def main(argv):
     testX_scaled = preprocessing.scale(testX)
     testX_PCA = PCA(n_components=30).fit_transform(testX_scaled)
 
-    proba = eclf.predict_proba(testX_PCA)
-    prediction = eclf.predict(testX_PCA)
-    
+    proba = np.zeros((len(testX),3))
+    for i in range(3):
+        eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
+                                         ('dt', clf4), ('kn', clf5), ('svc', clf6)], 
+                                 voting='soft').fit(X_PCA,Y_binary[:,i])
+
+        proba[:,i] = eclf.predict_proba(testX_PCA)[:,1]
+        
+
     # Write to file
     results = pd.DataFrame(proba)
-    results['prediction'] = prediction
+    results['prediction'] = np.argmax(proba, axis=1) + 1
     results.to_csv('testY.txt', sep='\t', header = False, index = False)
 
     print(results.iloc[0:10,:])
