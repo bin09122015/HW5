@@ -22,23 +22,32 @@ from sklearn.decomposition import PCA
 from sklearn import preprocessing
 
 def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_components = 30):
+    
+    n_train = len(trainX)
+    n_test = len(testX)
+    X = np.concatenate((trainX, testX), axis=0)
+    
     if dimensionReduction:        
-        trainX = preprocessing.scale(trainX)
-        trainX = PCA(n_components=n_components).fit_transform(trainX)
-        
-        testX = preprocessing.scale(testX)
-        testX = PCA(n_components=n_components).fit_transform(testX)
+        X = preprocessing.scale(X)
+        X = PCA(n_components=n_components).fit_transform(X)
+    
+    trainX = X[0:n_train]
+    testX = X[n_train: n_train+n_test+1]
 
     proba = np.zeros((len(testX),3))
-    for i in range(trainY.shape[1]):
-        clf = clf.fit(trainX,trainY[:,i])
-        proba[:,i] = clf.predict_proba(testX)[:,1]
+    
+    if len(trainY.shape) > 1:
+        for i in range(trainY.shape[1]):
+            clf = clf.fit(trainX,trainY[:,i])
+            proba[:,i] = clf.predict_proba(testX)[:,1]
+    else:
+        clf = clf.fit(trainX, trainY)
+        proba = clf.predict_proba(testX)
 
     # Write to file
     results = pd.DataFrame(proba)
     results['prediction'] = np.argmax(proba, axis=1) + 1
         
-    print(results.iloc[0:10,:])
     return results
 
 
@@ -77,7 +86,7 @@ def main(argv):
 
     eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
                                          ('dt', clf4), ('kn', clf5), ('svc', clf6)], 
-                            voting='soft', weights = [1, 10, 1, 1, 3, 5])
+                            voting='soft', weights = [8, 2, 3, 1, 2, 10])
 
 
     # Get results, write to file, and print out training accuracy
@@ -89,5 +98,5 @@ def main(argv):
 
 
 if __name__ == "__main__":
-  main(sys.argv[1:])
+    main(sys.argv[1:])
 
