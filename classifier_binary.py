@@ -85,13 +85,13 @@ def main(argv):
     clf7 = AdaBoostClassifier(random_state=1)
 
     eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
-                                         ('dt', clf4), ('kn', clf5), ('svc', clf6)], 
-                            voting='soft', weights = [8, 2, 3, 1, 2, 10])
+                                         ('dt', clf4), ('kn', clf5), ('svc', clf6),
+                                         ('ab', clf7)], voting='soft')
 
 
     # Get results, write to file, and print out training accuracy
-    results_training = trainAndPredict(eclf, X, Y_binary, X)
-    print('training accuracy',accuracy_score(Y, results_training['prediction']))
+    #results_training = trainAndPredict(eclf, X, Y_binary, X)
+    #print('training accuracy',accuracy_score(Y, results_training['prediction']))
 
     results_test= trainAndPredict(eclf, X, Y_binary, testX)
     results_test.to_csv('testY.txt', sep='\t', header = False, index = False)
@@ -100,3 +100,8 @@ def main(argv):
 if __name__ == "__main__":
     main(sys.argv[1:])
 
+'''
+Testing notes:
+11/14 Bin Yan
+Binary, eclf without weights, adaboost included
+'''
