@@ -50,12 +50,6 @@ def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_com
         
     return results
 
-# fill in na according to their labels
-def fillna(df, label):
-    df_sub = df[df['Y'] == label]
-    df_sub.fillna(df_sub.median(), inplace = True)
-    return df_sub
-
 
 def main(argv):
     # Deal with input data
@@ -65,13 +59,7 @@ def main(argv):
     df = pd.concat([trainX, trainY], axis=1)
     index = df.isnull().sum(axis=1) <= 2
     df = df[index]
-    
-    df1 = fillna(df, 1)
-    df2 = fillna(df, 2)
-    df3 = fillna(df, 3)
-    
-    frames = [df1, df2, df3]
-    df = pd.concat(frames)
+    df.fillna(df.median(), inplace = True)
     print(len(df))
 
     X = df.iloc[:,0:-1].values
@@ -116,7 +104,4 @@ if __name__ == "__main__":
 Testing notes:
 11/14 Bin Yan
 Binary, eclf without weights, adaboost included
-
-11/15 Bin Yan
-Fill in according to labels, clf6
 '''
