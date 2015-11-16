@@ -63,7 +63,7 @@ def main(argv):
     trainX.drop(trainX.columns[len(trainX.columns)-1], axis = 1, inplace = True)
     trainY = pd.read_csv("trainingTruth.txt", header = None, names = ['Y'])
     df = pd.concat([trainX, trainY], axis=1)
-    index = df.isnull().sum(axis=1) <= 2
+    index = df.isnull().sum(axis=1) <= 1
     df = df[index]
     
     df1 = fillna(df, 1)
@@ -119,4 +119,5 @@ Binary, eclf without weights, adaboost included
 
 11/15 Bin Yan
 Fill in according to labels, clf6
+Only allow one NA
 '''
