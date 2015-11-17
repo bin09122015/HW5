@@ -33,27 +33,29 @@ def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_com
     
     trainX = X[0:n_train]
     testX = X[n_train: n_train+n_test+1]
-
-    proba = np.zeros((len(testX),3))
+    
     
     if len(trainY.shape) > 1:
+        proba = np.zeros((len(testX),3))
         for i in range(trainY.shape[1]):
             clf = clf.fit(trainX,trainY[:,i])
             proba[:,i] = clf.predict_proba(testX)[:,1]
+        prediction = np.argmax(proba, axis=1) + 1
     else:
         clf = clf.fit(trainX, trainY)
         proba = clf.predict_proba(testX)
+        prediction = clf.predict(testX)
 
     # Write to file
     results = pd.DataFrame(proba)
-    results['prediction'] = np.argmax(proba, axis=1) + 1
+    results['prediction'] = prediction
         
     return results
 
 # fill in na according to their labels
 def fillna(df, label):
     df_sub = df[df['Y'] == label]
-    df_sub.fillna(df_sub.median(), inplace = True)
+    df_sub = df_sub.fillna(df_sub.median())
     return df_sub
 
 
@@ -70,9 +72,9 @@ def main(argv):
     df2 = fillna(df, 2)
     df3 = fillna(df, 3)
     
-    frames = [df1, df2, df3]
-    df = pd.concat(frames)
-    print(len(df))
+    df = pd.concat([df1, df2, df3])
+    
+    print('Training data length', len(df))
 
     X = df.iloc[:,0:-1].values
     Y = df['Y'].values
@@ -105,7 +107,12 @@ def main(argv):
     #results_training = trainAndPredict(eclf, X, Y_binary, X)
     #print('training accuracy',accuracy_score(Y, results_training['prediction']))
 
-    results_test= trainAndPredict(eclf, X, Y_binary, testX)
+    # binary predictions
+    #results_test= trainAndPredict(clf6, X, Y_binary, testX)
+
+    # multi-label predictions
+    results_test= trainAndPredict(clf6, X, Y, testX)
+
     results_test.to_csv('testY.txt', sep='\t', header = False, index = False)
 
 
@@ -120,4 +127,7 @@ Binary, eclf without weights, adaboost included
 11/15 Bin Yan
 Fill in according to labels, clf6
 Only allow one NA
+
+11/16 Bin Yan
+Based on 11/15 results, fill in prob(1) with multi-label results
 '''
