@@ -53,8 +53,10 @@ def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_com
     return results
 
 # fill in na according to their labels
-def fillna(df, label):
+def fillna(df, label, num_NA):
     df_sub = df[df['Y'] == label]
+    index = df_sub.isnull().sum(axis=1) <= num_NA
+    df_sub = df_sub[index]
     df_sub = df_sub.fillna(df_sub.median())
     return df_sub
 
@@ -65,12 +67,10 @@ def main(argv):
     trainX.drop(trainX.columns[len(trainX.columns)-1], axis = 1, inplace = True)
     trainY = pd.read_csv("trainingTruth.txt", header = None, names = ['Y'])
     df = pd.concat([trainX, trainY], axis=1)
-    index = df.isnull().sum(axis=1) <= 1
-    df = df[index]
     
-    df1 = fillna(df, 1)
-    df2 = fillna(df, 2)
-    df3 = fillna(df, 3)
+    df1 = fillna(df, 1, num_NA = 0)
+    df2 = fillna(df, 2, num_NA = 0)
+    df3 = fillna(df, 3, num_NA = 3)
     
     df = pd.concat([df1, df2, df3])
     
@@ -108,10 +108,10 @@ def main(argv):
     #print('training accuracy',accuracy_score(Y, results_training['prediction']))
 
     # binary predictions
-    #results_test= trainAndPredict(clf6, X, Y_binary, testX)
+    results_test= trainAndPredict(clf6, X, Y_binary, testX)
 
     # multi-label predictions
-    results_test= trainAndPredict(clf6, X, Y, testX)
+    # results_test= trainAndPredict(clf6, X, Y, testX)
 
     results_test.to_csv('testY.txt', sep='\t', header = False, index = False)
 
