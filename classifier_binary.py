@@ -33,8 +33,7 @@ def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_com
     
     trainX = X[0:n_train]
     testX = X[n_train: n_train+n_test+1]
-    
-    
+
     if len(trainY.shape) > 1:
         proba = np.zeros((len(testX),3))
         for i in range(trainY.shape[1]):
@@ -70,7 +69,7 @@ def main(argv):
     
     df1 = fillna(df, 1, num_NA = 0)
     df2 = fillna(df, 2, num_NA = 0)
-    df3 = fillna(df, 3, num_NA = 3)
+    df3 = fillna(df, 3, num_NA = 2)
     
     df = pd.concat([df1, df2, df3])
     
@@ -108,10 +107,10 @@ def main(argv):
     #print('training accuracy',accuracy_score(Y, results_training['prediction']))
 
     # binary predictions
-    results_test= trainAndPredict(clf6, X, Y_binary, testX)
+    # results_test= trainAndPredict(clf6, X, Y_binary, testX)
 
     # multi-label predictions
-    # results_test= trainAndPredict(clf6, X, Y, testX)
+    results_test= trainAndPredict(clf6, X, Y, testX)
 
     results_test.to_csv('testY.txt', sep='\t', header = False, index = False)
 
@@ -129,5 +128,6 @@ Fill in according to labels, clf6
 Only allow one NA
 
 11/16 Bin Yan
-Based on 11/15 results, fill in prob(1) with multi-label results
+Fill in according to labels, clf6
+multi-label results, 1&2: NA==0, 3: NA == 2
 '''
