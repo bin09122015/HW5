@@ -111,7 +111,7 @@ def main(argv):
     #results_test= trainAndPredict(clf6, X, Y_binary, testX)
 
     # multi-label predictions
-    results_test= trainAndPredict(clf6, X, Y, testX)
+    results_test = trainAndPredict(clf2, X, Y, testX, dimensionReduction = False)
 
     results_test.to_csv('testY.txt', sep='\t', header = False, index = False)
 
@@ -130,4 +130,10 @@ Only allow one NA
 
 11/16 Bin Yan
 Based on 11/15 results, fill in prob(1) with multi-label results
+
+11/17 Bin Yan
+Binary, NA: 0 0 3
+
+11/19 Bin Yan
+clf2, no PCA, all filled by labels
 '''
