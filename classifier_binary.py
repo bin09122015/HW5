@@ -67,9 +67,9 @@ def main(argv):
     trainY = pd.read_csv("trainingTruth.txt", header = None, names = ['Y'])
     df = pd.concat([trainX, trainY], axis=1)
     
-    df1 = fillna(df, 1, num_NA = 0)
-    df2 = fillna(df, 2, num_NA = 0)
-    df3 = fillna(df, 3, num_NA = 2)
+    df1 = fillna(df, 1, num_NA = 1)
+    df2 = fillna(df, 2, num_NA = 1)
+    df3 = fillna(df, 3, num_NA = 1)
     
     df = pd.concat([df1, df2, df3])
     
@@ -98,8 +98,8 @@ def main(argv):
     clf7 = AdaBoostClassifier(random_state=1)
 
     eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
-                                         ('dt', clf4), ('kn', clf5), ('svc', clf6),
-                                         ('ab', clf7)], voting='soft')
+                                         ('kn', clf5), ('svc', clf6),
+                                         ('ab', clf7)], voting='soft', weights = [2,3,2,2,3,0])
 
 
     # Get results, write to file, and print out training accuracy
@@ -107,10 +107,10 @@ def main(argv):
     #print('training accuracy',accuracy_score(Y, results_training['prediction']))
 
     # binary predictions
-    # results_test= trainAndPredict(clf6, X, Y_binary, testX)
+    results_test= trainAndPredict(eclf, X, Y_binary, testX)
 
     # multi-label predictions
-    results_test = trainAndPredict(clf2, X, Y, testX, dimensionReduction = False)
+    # results_test = trainAndPredict(eclf, X, Y, testX)
 
     results_test.to_csv('testY.txt', sep='\t', header = False, index = False)
 
@@ -128,16 +128,16 @@ Fill in according to labels, clf6
 Only allow one NA
 
 11/16 Bin Yan
-<<<<<<< HEAD
 Based on 11/15 results, fill in prob(1) with multi-label results
 
 11/17 Bin Yan
 Binary, NA: 0 0 3
 
 11/19 Bin Yan
-clf2, no PCA, all filled by labels
-=======
 Fill in according to labels, clf6
 multi-label results, 1&2: NA==0, 3: NA == 2
->>>>>>> 3de0ed3eade5f657247f034992a15175ab66d0b6
+
+11/21 Bin Yan
+didn't make the submission
+
 '''
