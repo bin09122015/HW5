@@ -21,6 +21,9 @@ from sklearn.metrics import accuracy_score
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
 
+from sknn.mlp import Classifier, Layer
+from sknn import ae, mlp
+
 def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_components = 30):
     
     n_train = len(trainX)
@@ -30,7 +33,7 @@ def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_com
     if dimensionReduction:        
         X = preprocessing.scale(X)
         X = PCA(n_components=n_components).fit_transform(X)
-    
+       
     trainX = X[0:n_train]
     testX = X[n_train: n_train+n_test+1]
 
@@ -96,11 +99,23 @@ def main(argv):
     clf5 = KNeighborsClassifier(n_neighbors=7)
     clf6 = SVC(kernel='rbf', probability=True)
     clf7 = AdaBoostClassifier(random_state=1)
+    clf8_1 = Classifier(
+                layers=[
+                    Layer("Maxout", units=100, pieces=2),
+                    Layer("Softmax")],
+                learning_rate=0.001,
+                n_iter=25)
+    clf8_2 = Classifier(
+                layers=[
+                    Layer("Maxout", units=100, pieces=2),
+                    Layer("Sigmoid")],
+                learning_rate=0.001,
+                n_iter=25)
 
     eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
                                          ('kn', clf5), ('svc', clf6),
                                          ('ab', clf7)], voting='soft', weights = [2,3,2,2,3,0])
-
+    # eclf = VotingClassifier(estimators=[('nn', clf8_2)], voting='soft')
 
     # Get results, write to file, and print out training accuracy
     #results_training = trainAndPredict(eclf, X, Y_binary, X)
