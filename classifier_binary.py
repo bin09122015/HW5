@@ -64,6 +64,13 @@ def fillna(df, label, num_NA):
 
 
 def main(argv):
+    len_argv = len(argv)
+    if len_argv != 1:
+      print ('classifier_binary.py <test filename>')
+      sys.exit()
+
+    test_filename = argv[0]
+
     # Deal with input data
     trainX = pd.read_csv('trainingData.txt','\t', header = None)
     trainX.drop(trainX.columns[len(trainX.columns)-1], axis = 1, inplace = True)
@@ -87,7 +94,7 @@ def main(argv):
         Y_binary[index,i] = 1
         
     # Read in test data
-    testX = pd.read_csv('testData.txt','\t', header = None)
+    testX = pd.read_csv(test_filename, '\t', header = None)
     testX.drop(testX.columns[len(testX.columns)-1], axis = 1, inplace = True)
     testX.fillna(testX.median(), inplace = True) # Handle NA in test data, although not necessary for this assignment.
 
@@ -116,43 +123,17 @@ def main(argv):
     eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
                                          ('kn', clf5), ('svc', clf6),
                                          ('ab', clf7), ('nn', clf8_1)], voting='soft', weights = [2,3,2,2,3,0,4])
-    # eclf = VotingClassifier(estimators=[('nn', clf8_2)], voting='soft')
 
     # Get results, write to file
 
     # binary predictions
-    # results_test= trainAndPredict(eclf, X, Y_binary, testX)
+    results_test= trainAndPredict(eclf, X, Y_binary, testX)
 
     # multi-label predictions
-    results_test = trainAndPredict(eclf, X, Y, testX)
+    # results_test = trainAndPredict(eclf, X, Y, testX)
 
-    results_test.to_csv('y1_multilabel_eclf_with weights2322304_NA111.txt', sep='\t', header = False, index = False)
+    results_test.to_csv('y1_binary_eclf_with_weights2322304_NA111.txt', sep='\t', header = False, index = False)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
 
-'''
-Testing notes:
-11/14 Bin Yan
-Binary, eclf without weights, adaboost included
-
-11/15 Bin Yan
-Fill in according to labels, clf6
-Only allow one NA
-
-11/16 Bin Yan
-Based on 11/15 results, fill in prob(1) with multi-label results
-
-11/17 Bin Yan
-Binary, NA: 0 0 3
-
-11/19 Bin Yan
-Fill in according to labels, clf6
-multi-label results, 1&2: NA==0, 3: NA == 2
-
-11/21 Bin Yan
-didn't make the submission
-
-11/24 Binary, eclf, weights2322403
-
-'''
