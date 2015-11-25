@@ -23,6 +23,7 @@ from sklearn import preprocessing
 
 from sknn.mlp import Classifier, Layer
 from sknn import ae, mlp
+# Need to install: pip install scikit-neuralnetwork
 
 def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_components = 30):
     
@@ -48,7 +49,6 @@ def trainAndPredict(clf, trainX, trainY, testX, dimensionReduction = True, n_com
         proba = clf.predict_proba(testX)
         prediction = clf.predict(testX)
 
-    # Write to file
     results = pd.DataFrame(proba)
     results['prediction'] = prediction
         
@@ -86,6 +86,7 @@ def main(argv):
         index = Y == (i+1)
         Y_binary[index,i] = 1
         
+    # Read in test data
     testX = pd.read_csv('testData.txt','\t', header = None)
     testX.drop(testX.columns[len(testX.columns)-1], axis = 1, inplace = True)
     testX.fillna(testX.median(), inplace = True) # Handle NA in test data, although not necessary for this assignment.
@@ -114,20 +115,18 @@ def main(argv):
 
     eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
                                          ('kn', clf5), ('svc', clf6),
-                                         ('ab', clf7), ('nn', clf8_1)], voting='soft', weights = [2,3,2,2,3,0,3])
+                                         ('ab', clf7), ('nn', clf8_1)], voting='soft', weights = [2,3,2,2,4,0,3])
     # eclf = VotingClassifier(estimators=[('nn', clf8_2)], voting='soft')
 
-    # Get results, write to file, and print out training accuracy
-    #results_training = trainAndPredict(eclf, X, Y_binary, X)
-    #print('training accuracy',accuracy_score(Y, results_training['prediction']))
+    # Get results, write to file
 
     # binary predictions
-    # results_test= trainAndPredict(eclf, X, Y_binary, testX)
+    results_test= trainAndPredict(eclf, X, Y_binary, testX)
 
     # multi-label predictions
-    results_test = trainAndPredict(eclf, X, Y, testX)
+    # results_test = trainAndPredict(eclf, X, Y, testX)
 
-    results_test.to_csv('y1_multilabel_eclf_with weights2322303_NA111.txt', sep='\t', header = False, index = False)
+    results_test.to_csv('y1_binary_eclf_with weights2322403_NA111.txt', sep='\t', header = False, index = False)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
@@ -153,5 +152,7 @@ multi-label results, 1&2: NA==0, 3: NA == 2
 
 11/21 Bin Yan
 didn't make the submission
+
+11/24 Binary, eclf, weights2322403
 
 '''
