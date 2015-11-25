@@ -115,18 +115,18 @@ def main(argv):
 
     eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3),
                                          ('kn', clf5), ('svc', clf6),
-                                         ('ab', clf7), ('nn', clf8_1)], voting='soft', weights = [2,3,2,2,4,0,3])
+                                         ('ab', clf7), ('nn', clf8_1)], voting='soft', weights = [2,3,2,2,3,0,4])
     # eclf = VotingClassifier(estimators=[('nn', clf8_2)], voting='soft')
 
     # Get results, write to file
 
     # binary predictions
-    results_test= trainAndPredict(eclf, X, Y_binary, testX)
+    # results_test= trainAndPredict(eclf, X, Y_binary, testX)
 
     # multi-label predictions
-    # results_test = trainAndPredict(eclf, X, Y, testX)
+    results_test = trainAndPredict(eclf, X, Y, testX)
 
-    results_test.to_csv('y1_binary_eclf_with weights2322403_NA111.txt', sep='\t', header = False, index = False)
+    results_test.to_csv('y1_multilabel_eclf_with weights2322304_NA111.txt', sep='\t', header = False, index = False)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
